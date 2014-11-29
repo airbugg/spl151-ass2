@@ -21,7 +21,10 @@ RoadReport::RoadReport(int report_serial_num, int time_slice, const std::string&
 
 void RoadReport::writeReport()
 {
-	Containers::road_container[_start_junction + "," + _end_junction]->generateReport(_report_id);
+	if (Containers::road_container.find(_start_junction + "," + _end_junction) != Containers::road_container.end())
+		Containers::road_container[_start_junction + "," + _end_junction]->generateReport(_report_id);
+	else
+		std::cout << "are you trying to access a non-existant road?\n";
 }
 
 void RoadReport::toString()

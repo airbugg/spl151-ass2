@@ -19,5 +19,8 @@ void CarFaultEvent::toString() {}
 
 void CarFaultEvent::performEvent()
 {
-	Containers::car_container[_car_id]->sabotageCar(_fault_time);
+	if (Containers::car_container.find(_car_id) != Containers::car_container.end())
+		Containers::car_container[_car_id]->sabotageCar(_fault_time);
+	else
+		std::cout << "can't sabotage a non-existant car.\n";
 }

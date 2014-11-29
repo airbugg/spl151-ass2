@@ -60,6 +60,8 @@ std::string RoadQueue::carsInQueue()
 		cars_in_queue += "(";
 		cars_in_queue += r_car_iterator->get().car_id();
 		cars_in_queue += ")";
+
+		++r_car_iterator;
 	}
 
 	return cars_in_queue;

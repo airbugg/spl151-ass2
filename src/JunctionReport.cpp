@@ -22,7 +22,11 @@ JunctionReport::~JunctionReport()
 
 void JunctionReport::writeReport()
 {
-	Containers::junction_container[_junc_id]->generateReport(_report_id);
+	if (Containers::junction_container.find(_junc_id) != Containers::junction_container.end())
+		Containers::junction_container[_junc_id]->generateReport(_report_id);
+	else
+		std::cout << "are you trying to access a non-existant junction? \n";
+
 }
 
 void JunctionReport::toString()

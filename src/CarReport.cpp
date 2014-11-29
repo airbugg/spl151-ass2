@@ -19,14 +19,10 @@ CarReport::CarReport(int report_serial_num, int time_slice, const std::string& r
 
 void CarReport::writeReport()
 {
-	Containers::car_container[_car_id]->generateReport(_report_id);
-
-	//std::ofstream report_file;
-	//report_file.open(Simulator::_output_file, std::ios_base::app);
-	//report_file << "[" << _report_id << "]" << "\n";
-	//report_file << Containers::car_container[_car_id]->generateReport();
-
-	//report_file.close();
+	if (Containers::car_container.find(_car_id) != Containers::car_container.end())
+		Containers::car_container[_car_id]->generateReport(_report_id);
+	else
+		std::cout << "are you trying to produce a report of a non-existant car?\n";
 }
 
 void CarReport::toString()
