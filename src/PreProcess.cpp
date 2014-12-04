@@ -7,7 +7,7 @@ bool PreProcess::pre_process_test(const std::string road_map_location, const std
 	return (PreProcess::test_events(events_location) && PreProcess::test_commands(commands_location) && PreProcess::test_roadMap(road_map_location) && PreProcess::test_configuration(configuration_location));
 }
 
-bool PreProcess::test_events(const std::string events_location)
+bool PreProcess::test_events(const std::string events_location) //read Event.ini and check's fields validility
 {
 	bool ITSALLGOOD = true;
 	boost::property_tree::ptree pt;
@@ -28,13 +28,13 @@ bool PreProcess::test_events(const std::string events_location)
 			}
 			else if (property_type == "time")
 			{
-				if (!check_int_validation(property_value))
+				if (!check_int_validation(property_value)) //should be int
 				{
 					PreProcess::print_error_massage(section->first, property_type);
 					ITSALLGOOD = false;
 				}
 			}
-			else if (property_type == "timeOfFault")
+			else if (property_type == "timeOfFault") //should be int
 			{
 				if (!check_int_validation(property_value))
 				{
@@ -44,7 +44,7 @@ bool PreProcess::test_events(const std::string events_location)
 			}
 			else if (property_type == "carId")
 			{
-				if (property_value == "")
+				if (property_value == "") // should not be empty
 				{
 					PreProcess::print_error_massage(section->first, property_type);
 					ITSALLGOOD = false;
@@ -52,15 +52,18 @@ bool PreProcess::test_events(const std::string events_location)
 			}
 			else if (property_type == "roadPlan")
 			{
-				check_existence(property_type, property_value);
-				//ITSALLGOOD = false;
+				if (property_value == "")
+				{
+					PreProcess::print_error_massage(section->first, property_type);
+					ITSALLGOOD = false;
+				}
 			}
 		}
 	}
 	return ITSALLGOOD;
 }
 
-bool PreProcess::test_commands(const std::string commands_location)
+bool PreProcess::test_commands(const std::string commands_location) //reads Commands.ini and check's fields validility
 {
 	bool ITSALLGOOD = true;
 	boost::property_tree::ptree pt;
@@ -80,7 +83,7 @@ bool PreProcess::test_commands(const std::string commands_location)
 				}
 			}
 
-			else if (property_type == "time")
+			else if (property_type == "time") // supose to be an int
 			{
 				if (!check_int_validation(property_value))
 				{
@@ -88,7 +91,7 @@ bool PreProcess::test_commands(const std::string commands_location)
 					ITSALLGOOD = false;
 				}
 			}
-			else if (property_type == "id")
+			else if (property_type == "id") // should'nt be empty
 			{
 				if (property_value == "")
 				{
@@ -98,7 +101,7 @@ bool PreProcess::test_commands(const std::string commands_location)
 			}
 			else if (property_type == "carId" || property_type == "junctionId" || property_type == "startJunction" || property_type == "endJunction")
 			{
-				if (!check_existence(property_type, property_value))
+				if (property_value == "") // should'nt be empty, existence will be checked later
 				{
 					PreProcess::print_error_massage(section->first, property_type);
 					ITSALLGOOD = false;
@@ -114,7 +117,7 @@ bool PreProcess::test_roadMap(const std::string road_map_location)
 	return true;
 }
 
-bool PreProcess::test_configuration(const std::string configuration_location)
+bool PreProcess::test_configuration(const std::string configuration_location) // reads Configuration.ini file and checks that all fields are valid (supose to be all int's)
 {
 	bool ITSALLGOOD = true;
 	boost::property_tree::ptree pt;
@@ -135,7 +138,7 @@ bool PreProcess::test_configuration(const std::string configuration_location)
 	return ITSALLGOOD;
 }
 
-bool PreProcess::check_int_validation(const std::string& property_value)
+bool PreProcess::check_int_validation(const std::string& property_value) // checks that every charachter in is a digit
 {
 	bool isAdigit = true;
 	if (!property_value.empty() && property_value[0] != '-')
@@ -155,35 +158,7 @@ bool PreProcess::check_int_validation(const std::string& property_value)
 	return isAdigit;
 }
 
-void PreProcess::check_roadPlan(const std::string& property_value)
-{
-}
-
-void PreProcess::print_error_massage(const std::string& section, const std::string& property_type)
+void PreProcess::print_error_massage(const std::string& section, const std::string& property_type) // prints an error message if invalid input identified
 {
 	std::cout << "property " << property_type << " is not valid in the section " << section << endl;
-}
-
-bool PreProcess::check_existence(const std::string& property_type, const std::string& property_value)
-{
-	bool is_exist = false;
-	if (property_type == "carId")
-	{
-		//is_exist = car_map.find(property_value);
-	}
-	else if (property_type == "junctionId" || property_type == "startJunction" || property_type == "endJunction")
-	{
-		//is_exist = junction_map.find(property_value)
-	}
-	else if (property_value == "roadPlan")
-	{
-		//size_t comma = property_value.find_first_of (',');
-		//std::string road_name = property_value.substr(0,comma);
-		//std::string length_as_string = property_value.substr(last_comma+1, string::npos);
-	}
-	return 1;
-}
-
-void parseRoadMap()
-{
 }
