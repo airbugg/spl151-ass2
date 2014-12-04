@@ -18,7 +18,5 @@ struct PreProcess
 	static bool test_configuration(const std::string configuration_location);
 
 	static bool check_int_validation(const std::string& property_value);
-	static void check_roadPlan(const std::string& property_value);
 	static void print_error_massage(const std::string& section, const std::string& property_type);
-	static bool check_existence(const std::string& property_type, const std::string& property_value);
 };
