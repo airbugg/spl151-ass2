@@ -34,10 +34,10 @@ Simulator::Simulator(const std::string road_map_location, const std::string even
 	_output_file = output_file_location;
 }
 
-void Simulator::init()
+void Simulator::init()// commiting syntax validation of .ini files and initializes all major data structors in the program (maps, queues)
 {
 	cout << "Simulator initializing: Running Pre-Proccessing..." << endl;
-	if (PreProcess::pre_process_test(_road_map_file, _events_file, _commands_file, _config_file))
+	if (PreProcess::pre_process_test(_road_map_file, _events_file, _commands_file, _config_file)) // the program will only run if all the .ini files pass intactness check
 	{
 		cout << "Finished Pre-Processing, reading configuration file..." << endl;
 		setAttributes(_config_file);
@@ -51,7 +51,7 @@ void Simulator::init()
 	}
 }
 
-void Simulator::tick()
+void Simulator::tick() // commit time-slice "tick"
 {
 	while (Containers::time() < Containers::termination())
 	{
@@ -73,11 +73,12 @@ void Simulator::tick()
 	cout << "\n\nSimulation Complete.";
 }
 
-void Simulator::buildRoads(const std::string& file_location)
+void Simulator::buildRoads(const std::string& file_location) // constructing Containers::fRoadMap and Containers::fJunctionMap
 {
 	boost::property_tree::ptree pt;
 	boost::property_tree::ini_parser::read_ini(file_location, pt);
-
+	
+	//for every section in "RoadMap.ini", create appropriate roads and junctions
 	for (boost::property_tree::ptree::const_iterator section = pt.begin(); section != pt.end(); ++section)
 	{
 		std::string incoming_roads;
@@ -90,21 +91,24 @@ void Simulator::buildRoads(const std::string& file_location)
 			std::string roadName = property->first;
 			roadName += ",";
 			roadName += section->first;
-			Containers::road_container[roadName] = new Road(roadName, property->first, section->first, boost::lexical_cast<int>(property->second.data()));;
+			Containers::road_container[roadName] = new Road(roadName, property->first, section->first, boost::lexical_cast<int>(property->second.data())); // insert new road to the map
 		}
 
 		incoming_roads = incoming_roads.substr(0, incoming_roads.size() - 1); // remove pesky trailing comma.
-		Containers::junction_container[section->first] = new Junction(section->first, Containers::default_time_slice(), incoming_roads);
+		Containers::junction_container[section->first] = new Junction(section->first, Containers::default_time_slice(), incoming_roads); //insert ne junction to the map
 	}
 }
 
-void Simulator::buildEventsPriorityQueue(const std::string& file_location)
-{ // check if event time is post termination
+void Simulator::buildEventsPriorityQueue(const std::string& file_location) // constructing Containers::fEventQueue
+{
 	boost::property_tree::ptree pt;
 	boost::property_tree::ini_parser::read_ini(file_location, pt);
-
+	
+	//event_serial_number helps us positioning the event's in queue by their file apperiance order.
 	int event_serial_num = 1;
-
+	
+	
+	//for every event in "Events.ini", create an appropriate event and insert it to Containers::fEventQueue
 	for (boost::property_tree::ptree::const_iterator section = pt.begin(); section != pt.end(); ++section)
 	{
 		std::string event_type;
@@ -151,13 +155,15 @@ void Simulator::buildEventsPriorityQueue(const std::string& file_location)
 	}
 }
 
-void Simulator::buildReportsPriorityQueue(const std::string& file_location)
-{ // do before events
+void Simulator::buildReportsPriorityQueue(const std::string& file_location) // constructing Containers::fReportQueue
+{
 	boost::property_tree::ptree pt;
 	boost::property_tree::ini_parser::read_ini(file_location, pt);
 
+	//report_serial_number helps us positioning the reportss in queue by their file apperiance order.
 	int report_serial_num = 1;
 
+	//for every report in "Reports.ini", create an appropriate report and insert it to Containers::fReportQueue
 	for (boost::property_tree::ptree::const_iterator section = pt.begin(); section != pt.end(); ++section)
 	{
 		std::string report_type;
@@ -167,7 +173,7 @@ void Simulator::buildReportsPriorityQueue(const std::string& file_location)
 		std::string end_junction;
 		std::string junction_id;
 		int time;
-
+		
 		for (boost::property_tree::ptree::const_iterator property = section->second.begin(); property != section->second.end(); ++property)
 		{
 			string property_type = property->first;
@@ -218,14 +224,14 @@ void Simulator::buildReportsPriorityQueue(const std::string& file_location)
 			JunctionReport* junction_report = new JunctionReport(report_serial_num, time, report_id, junction_id);
 			Containers::report_queue.push(junction_report);
 		}
-		else if (time > Containers::termination())
+		else if (time > Containers::termination())// if the report is non of the above, this means the report is a  "termination" report
 			Containers::set_termination(time);
 
 		report_serial_num++;
 	}
 }
 
-void Simulator::setAttributes(const std::string& file_location)
+void Simulator::setAttributes(const std::string& file_location)// sets program global attributes (DEFAULT_TIME_SLICE etc...)
 {
 	boost::property_tree::ptree pt;
 	boost::property_tree::ini_parser::read_ini(file_location, pt);
@@ -257,7 +263,7 @@ void Simulator::setAttributes(const std::string& file_location)
 	}
 }
 
-void Simulator::executeEvents()
+void Simulator::executeEvents() // execute events thet match the current time slice, by thier appearance order in the file
 {
 	while (!Containers::event_queue.empty() && Containers::event_queue.top()->time_slice() == Containers::time())
 	{
@@ -272,7 +278,7 @@ void Simulator::executeEvents()
 	}
 }
 
-void Simulator::executeCommands()
+void Simulator::executeCommands() // execute reports thet match the current time slice, by thier appearance order in the file
 {
 	while (!Containers::report_queue.empty() && Containers::report_queue.top()->time_slice() == Containers::time())
 	{
@@ -287,7 +293,7 @@ void Simulator::executeCommands()
 	}
 }
 
-void Simulator::advanceCarsInRoads()
+void Simulator::advanceCarsInRoads()// for each road that has cars on it, advance all cars on road
 {
 	for (road_container_iterator it = Containers::active_road_container.begin(); it != Containers::active_road_container.end(); ++it)
 	{
@@ -296,7 +302,7 @@ void Simulator::advanceCarsInRoads()
 	}
 }
 
-void Simulator::advanceCarsInJunctions()
+void Simulator::advanceCarsInJunctions() // for each junction, advence cars on junction
 {
 	for (junction_container_iterator it = Containers::junction_container.begin(); it != Containers::junction_container.end(); ++it)
 	{
@@ -305,13 +311,13 @@ void Simulator::advanceCarsInJunctions()
 	}
 }
 
-void Simulator::updateCarHistory()
+void Simulator::updateCarHistory() // update car history for all cars in Containers::fCarMap
 {
 	for (car_container_iterator it = Containers::car_container.begin(); it != Containers::car_container.end(); ++it)
 		it->second->updateHistory();
 }
 
-void Simulator::outputReport()
+void Simulator::outputReport()// extract report from report_tree to output file
 {
 	boost::property_tree::write_ini(_output_file, Containers::report_tree);
 	std::cout << "\n\nReport output file created in: " << _output_file << std::endl;
