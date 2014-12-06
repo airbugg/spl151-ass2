@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Car.h"
-//#include "EventComparator.h"
 #include "Report.h"
 #include "Event.h"
 #include "Containers.h"
@@ -18,7 +17,6 @@
 
 #include <iostream>
 #include <map>
-//#include <queue>
 #include <string>
 
 using namespace std;
@@ -28,13 +26,6 @@ class Road;
 class Car;
 class Junction;
 
-//class AddCarEvent;
-//class CarFaultEvent;
-//class CarReport;
-//class JunctionReport;
-//class RoadReport;
-//class Containers;
-//struct PreProcess;
 
 class Simulator
 {
