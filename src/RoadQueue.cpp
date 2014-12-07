@@ -57,9 +57,10 @@ std::string RoadQueue::carsInQueue()
 
 	while (r_car_iterator != _incoming_road.get()._cars.rend() && r_car_iterator->get().at_junc())
 	{
-		cars_in_queue += "(";
-		cars_in_queue += r_car_iterator->get().car_id();
-		cars_in_queue += ")";
+		// insert in reverse order - right most car in string is first to leave junction
+		cars_in_queue.insert(0, ")");
+		cars_in_queue.insert(0, r_car_iterator->get().car_id());
+		cars_in_queue.insert(0, "(");
 
 		++r_car_iterator;
 	}

@@ -37,10 +37,11 @@ void Junction::rotate()
 
 void Junction::advance()
 {
+	_road_robin[_curr_road_location].advance();
+
 	if (_road_robin[_curr_road_location].remaining_time() == 0)
 		rotate();
 
-	_road_robin[_curr_road_location].advance();
 }
 
 void Junction::generateReport(const std::string& report_id)

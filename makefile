@@ -35,4 +35,3 @@ Compile:
 
 clean:
 	rm -rf bin/*
-	rm -rf output/*

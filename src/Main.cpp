@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-	Simulator sim("input/RoadMap.ini", "input/Events.ini", "input/Commands.ini", "input/Configuration.ini", "output/Report.ini");
+	Simulator sim("RoadMap.ini", "Events.ini", "Commands.ini", "Configuration.ini", "Report.ini");
 	sim.init();
 	sim.tick();
 

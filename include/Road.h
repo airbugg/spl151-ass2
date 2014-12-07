@@ -13,7 +13,7 @@ class Car; //forward declaration of Car to avoid circular dependencies and whatn
 
 class Road
 {
-	friend RoadQueue;
+	friend class RoadQueue;
 
 	typedef std::list<boost::reference_wrapper<Car> >::iterator road_iterator;
 	typedef std::list<boost::reference_wrapper<Car> >::reverse_iterator r_road_iterator;
