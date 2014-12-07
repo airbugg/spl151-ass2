@@ -26,5 +26,8 @@ void AddCarEvent::toString()
 
 void AddCarEvent::performEvent()
 { //check_existence
-	Containers::car_container[_car_id] = new Car(_car_id, _road_plan);
+	if (Containers::car_container.find(_car_id) == Containers::car_container.end())
+		Containers::car_container[_car_id] = new Car(_car_id, _road_plan);
+	else
+		std::cout << _car_id << " already exists in simulator. Ignoring event...\n";
 }
